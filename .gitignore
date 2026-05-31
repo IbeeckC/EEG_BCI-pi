@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data — too big for git, store separately
+data/raw/
+data/processed/
+*.fif
+*.edf
+*.bdf
+*.set
+*.mat
+
+# Models — too big for git
+models/*.pkl
+models/*.h5
+models/*.pt
+models/*.joblib
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs (keep the markdown ones, ignore runtime logs)
+logs/*.log
+logs/runtime/
+
+# Local environment overrides
+.env
+*.local
