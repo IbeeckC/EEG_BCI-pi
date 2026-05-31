@@ -10,8 +10,8 @@ A real-time 2-channel EEG-based motor imagery BCI built on a Raspberry Pi 5. The
 ## Setup
 
 ```bash
-git clone git@github.com:beeckiC/bic_project.git
-cd bic_project
+git clone git@github.com:beeckiC/EEG_BCI-pi.git
+cd EEG_BCI-pi
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
