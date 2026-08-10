@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Citations — Ian Beeck's EEG BCI</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav">
+  <a class="nav__brand" href="index.html">◠ EEG_BCI <span>/ ian_beeck</span></a>
+  <div class="nav__links">
+    <a href="index.html">overview</a>
+    <a href="hardware.html">hardware</a>
+    <a href="software.html">software</a>
+    <a href="citations.html" class="active">citations</a>
+  </div>
+</nav>
+
+<!-- ===== Page hero ===== -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__eyebrow">References &amp; acknowledgments</div>
+    <h1><span class="accent">Citations</span> &amp; sources.</h1>
+    <p class="hero__lead">
+      The papers, tutorials, documentation, and tools this project was built on.
+    </p>
+  </div>
+</header>
+
+<!-- ===== Research papers ===== -->
+<section id="papers">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">01 / research</span>
+      <h2>Papers &amp; articles</h2>
+    </div>
+    <ul class="refs">
+      <li class="ref">
+        <div class="ref__type">Method · CSP</div>
+        <div class="ref__body">
+          <h3>Optimal Spatial Filtering of Single Trial EEG (Common Spatial Patterns)</h3>
+          <p>Ramoser et al. — the foundational method behind the CSP feature
+             extraction used throughout this project's classifier.</p>
+          <a class="ref__link" href="https://www.cs.hmc.edu/~keller/eeg/Ramoser.pdf" target="_blank" rel="noopener">cs.hmc.edu/~keller/eeg/Ramoser.pdf</a>
+        </div>
+      </li>
+      <li class="ref">
+        <div class="ref__type">Article · EEG / BCI</div>
+        <div class="ref__body">
+          <h3>EEG / motor-imagery reference (PMC)</h3>
+          <p>Peer-reviewed reference consulted on EEG signal processing and
+             brain–computer interface methods.
+             <span class="ref__note">[ title to be filled in ]</span></p>
+          <a class="ref__link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11978393/" target="_blank" rel="noopener">pmc.ncbi.nlm.nih.gov/articles/PMC11978393</a>
+        </div>
+      </li>
+      <li class="ref">
+        <div class="ref__type">Concept · time-frequency</div>
+        <div class="ref__body">
+          <h3>Morlet Wavelet</h3>
+          <p>Background on the Morlet wavelet, referenced for time–frequency
+             analysis of EEG signals.</p>
+          <a class="ref__link" href="https://www.sciencedirect.com/topics/neuroscience/morlet-wavelet" target="_blank" rel="noopener">sciencedirect.com — Morlet wavelet</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== Learning resources ===== -->
+<section id="learning" style="background: var(--ink-2); border-top: 1px solid var(--ink-3); border-bottom: 1px solid var(--ink-3);">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">02 / learning</span>
+      <h2>Tutorials &amp; videos</h2>
+    </div>
+    <ul class="refs">
+      <li class="ref">
+        <div class="ref__type">Video</div>
+        <div class="ref__body">
+          <h3>EEG / signal-processing tutorial</h3>
+          <p>Video reference used while learning the concepts behind the pipeline.
+             <span class="ref__note">[ label to be refined ]</span></p>
+          <a class="ref__link" href="https://www.youtube.com/watch?v=TQjWZKQvWqg" target="_blank" rel="noopener">youtube.com/watch?v=TQjWZKQvWqg</a>
+        </div>
+      </li>
+      <li class="ref">
+        <div class="ref__type">Video</div>
+        <div class="ref__body">
+          <h3>EEG / signal-processing tutorial</h3>
+          <p>Video reference used while learning the concepts behind the pipeline.
+             <span class="ref__note">[ label to be refined ]</span></p>
+          <a class="ref__link" href="https://www.youtube.com/watch?v=vsj7wUaTYdY" target="_blank" rel="noopener">youtube.com/watch?v=vsj7wUaTYdY</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== Tools & docs ===== -->
+<section id="tools">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">03 / tools</span>
+      <h2>Libraries &amp; documentation</h2>
+    </div>
+
+    <div class="prose">
+      <p>The software pillar was built on the Python scientific stack. The SciPy
+         signal-processing functions below were the specific tools used to design
+         and apply the project's filters.</p>
+    </div>
+
+    <div class="toolgrid">
+      <div class="tool"><h4>MNE-Python</h4><p>EEG data loading, PhysioNet dataset access, epoching, and CSP.</p><a href="https://mne.tools/" target="_blank" rel="noopener">mne.tools</a></div>
+      <div class="tool"><h4>scikit-learn</h4><p>LDA classifier, pipelines, and leak-free cross-validation.</p><a href="https://scikit-learn.org/" target="_blank" rel="noopener">scikit-learn.org</a></div>
+      <div class="tool"><h4>SciPy signal</h4><p>Filter design and application for the real-time / causal filtering work.</p><a href="https://docs.scipy.org/doc/scipy/reference/signal.html" target="_blank" rel="noopener">scipy.signal</a></div>
+      <div class="tool"><h4>pandas</h4><p>Loading and handling the PiEEG recording CSVs.</p><a href="https://pandas.pydata.org/" target="_blank" rel="noopener">pandas.pydata.org</a></div>
+      <div class="tool"><h4>NumPy</h4><p>Array math underlying every stage of the pipeline.</p><a href="https://numpy.org/" target="_blank" rel="noopener">numpy.org</a></div>
+      <div class="tool"><h4>Matplotlib</h4><p>All spectra, scalp maps, and result plots.</p><a href="https://matplotlib.org/" target="_blank" rel="noopener">matplotlib.org</a></div>
+      <div class="tool"><h4>PiEEG-16</h4><p>The acquisition board and its recording/streaming software.</p><a href="https://pieeg.com/" target="_blank" rel="noopener">pieeg.com</a></div>
+      <div class="tool"><h4>PhysioNet</h4><p>The EEG Motor Movement/Imagery dataset the pipeline was validated on.</p><a href="https://physionet.org/content/eegmmidb/" target="_blank" rel="noopener">physionet.org</a></div>
+    </div>
+
+    <div class="prose" style="margin-top:2rem;">
+      <h3 class="step-h">SciPy signal functions used</h3>
+    </div>
+    <ul class="funclist">
+      <li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.butter.html" target="_blank" rel="noopener"><span class="mono">butter</span></a> — Butterworth filter design</li>
+      <li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfilt.html" target="_blank" rel="noopener"><span class="mono">sosfilt</span></a> — apply an SOS filter (causal, streaming-safe)</li>
+      <li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfilt_zi.html" target="_blank" rel="noopener"><span class="mono">sosfilt_zi</span></a> — initial conditions for SOS streaming</li>
+      <li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter_zi.html" target="_blank" rel="noopener"><span class="mono">lfilter_zi</span></a> — initial conditions for IIR streaming</li>
+      <li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfreqz.html" target="_blank" rel="noopener"><span class="mono">sosfreqz</span></a> — frequency response of an SOS filter</li>
+      <li><a href="https://docs.scipy.org/doc/scipy/reference/signal.html" target="_blank" rel="noopener"><span class="mono">scipy.signal</span></a> — full signal-processing reference</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    built with a raspberry pi, a lot of conductive gel, and honest results · ian beeck 2026
+  </div>
+</footer>
+
+</body>
+</html>

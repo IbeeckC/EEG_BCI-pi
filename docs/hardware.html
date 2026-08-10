@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hardware — Ian Beeck's EEG BCI</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav">
+  <a class="nav__brand" href="index.html">◠ EEG_BCI <span>/ ian_beeck</span></a>
+  <div class="nav__links">
+    <a href="index.html">overview</a>
+    <a href="hardware.html" class="active">hardware</a>
+    <a href="software.html">software</a>
+    <a href="citations.html">citations</a>
+  </div>
+</nav>
+
+<!-- ===== Page hero ===== -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__eyebrow">Pillar 02 · Acquisition</div>
+    <h1>The <span class="accent">hardware</span>.</h1>
+    <p class="hero__lead">
+      A custom EEG acquisition device built around a Raspberry Pi — from
+      board bring-up to a hand-built electrode cap.
+    </p>
+  </div>
+</header>
+
+<!-- ===== The full rig ===== -->
+<section id="rig">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">00 / the rig</span>
+      <h2>Every component, on one table</h2>
+    </div>
+    <div class="prose">
+      <p>The complete setup: an acquisition board, a microcomputer, a battery for
+         safe electrical isolation, gold electrodes with conductive paste, a
+         hand-built cap, and the skin-prep supplies that turned out to matter far
+         more than expected.</p>
+    </div>
+    <figure class="figure figure--wide">
+      <img src="images/hw_all.png" alt="All hardware components labeled: electrode paste, syringe, alcohol prep pads, electrode cap, electrodes, laptop, Raspberry Pi 5, PiEEG-16, comb, 5V battery" />
+      <figcaption>The full rig — labeled. Everything from the acquisition board to the comb used for parting hair.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===== Component boxes ===== -->
+<section id="components" style="background: var(--ink-2); border-top: 1px solid var(--ink-3); border-bottom: 1px solid var(--ink-3);">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">01 / components</span>
+      <h2>The signal chain, part by part</h2>
+    </div>
+    <div class="prose">
+      <p>Follow the signal from scalp to computer: electrodes pick up microvolt
+         brain activity, the PiEEG board amplifies and digitizes it, and the
+         Raspberry Pi records and processes it — all powered by an isolated
+         battery for safety.</p>
+    </div>
+
+    <div class="components-grid">
+
+      <!-- Electrodes + paste -->
+      <article class="comp comp--electrodes">
+        <div class="comp__media"><img src="images/hw_electrodes.png" alt="Gold-plated electrodes, jumper wires, and neurodiagnostic electrode paste" /></div>
+        <div class="comp__body">
+          <div class="comp__tag">Sensors</div>
+          <h3>Gold-cup electrodes &amp; paste</h3>
+          <p>Gold-cup electrodes make electrical contact with the scalp. With
+             conductive neurodiagnostic paste bridging cup to skin, they pick up
+             the brain's faint electrical activity at specific 10–20 positions and
+             carry it — via jumper wires — to the acquisition board. These are the
+             sensors at the very front of the signal chain.</p>
+        </div>
+      </article>
+
+      <!-- PiEEG board -->
+      <article class="comp comp--pieeg">
+        <div class="comp__media"><img src="images/hw_pieeg.png" alt="PiEEG-16 board showing GPIO pins, 16 channel pins, reference and bias pins, and two ADS1299 chips" /></div>
+        <div class="comp__body">
+          <div class="comp__tag">Analog front-end</div>
+          <h3>PiEEG-16 board</h3>
+          <p>A shield that seats directly on the Pi's 40-pin GPIO header. Its two
+             <span class="mono">ADS1299</span> chips amplify and digitize the
+             microvolt-scale signals from up to 16 electrode channels (plus
+             reference and bias), streaming them to the Pi over SPI. This is what
+             turns faint scalp voltages into numbers the computer can read.</p>
+        </div>
+      </article>
+
+      <!-- Raspberry Pi -->
+      <article class="comp comp--pi">
+        <div class="comp__media"><img src="images/hw_pi.png" alt="Raspberry Pi 5 with GPIO pins and USB-C power jack labeled" /></div>
+        <div class="comp__body">
+          <div class="comp__tag">Compute</div>
+          <h3>Raspberry Pi 5</h3>
+          <p>The microcomputer that runs everything. It reads the digitized EEG
+             over its GPIO pins, runs the recording software, and can host the
+             signal processing and classification on-device. An established,
+             affordable platform — the "full-circle" heart of the project.</p>
+        </div>
+      </article>
+
+      <!-- Cap -->
+      <article class="comp comp--cap">
+        <div class="comp__media"><img src="images/hw_cap.png" alt="Custom electrode cap built from a beanie with grommets and electrodes" /></div>
+        <div class="comp__body">
+          <div class="comp__tag">Electrode holder</div>
+          <h3>Custom electrode cap</h3>
+          <p>A hand-built holder that positions each electrode at the correct
+             10–20 site and holds it in stable scalp contact. Built from a cotton
+             beanie with <strong>grommets</strong> for firm, independent electrode
+             seating and an <strong>elastic band</strong> to keep the reference and
+             ground electrodes pressed in place. The part that took by far the
+             most iteration to get right.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== Build narrative ===== -->
+<section id="build">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">02 / the build</span>
+      <h2>How it came together</h2>
+    </div>
+
+    <div class="prose build-steps">
+      <h3 class="step-h">1 · Sourcing — don't reinvent the wheel</h3>
+      <p>The first decision was pragmatic: build around what already existed and
+         was proven, rather than reinventing it. I already had a Raspberry Pi, so
+         the PiEEG-16 shield — an established, research-cited board that mounts
+         directly on it — was a natural fit. I also already had the exact power
+         the board requires: a <strong>5&nbsp;V, 3–3.5&nbsp;A, 10,000&nbsp;mAh
+         battery</strong>. Battery power isn't optional here — it electrically
+         isolates the device from mains, which is a genuine safety requirement
+         when electrodes are on your head.</p>
+
+      <h3 class="step-h">2 · Board bring-up — does it read signal?</h3>
+      <p>Before any electrodes, the goal was simply to prove the acquisition chain
+         worked: mount the board, enable SPI, install the PiEEG software, and
+         confirm the Pi could read data off all 16 channels. With inputs floating,
+         the board correctly showed its noise floor — the "hello world" that
+         confirmed the hardware was alive and communicating.</p>
+
+      <h3 class="step-h">3 · The cap — the real battle</h3>
+      <p>Getting clean signal off my own scalp was, by far, the hardest part.
+         Early caps made from silicone swim caps were too slippery and never held
+         electrodes snugly. A cotton beanie gripped better, but its closed knit
+         fabric blocked access to the scalp — I couldn't part hair to reach skin
+         through it. The breakthrough was <strong>grommets</strong>: enlarging the
+         holes for scalp access and seating rubber grommets that grip each
+         electrode independently, so adjusting one no longer disturbed the others.
+         An <strong>elastic band</strong> held the reference and ground electrodes
+         in stable contact. Across many sessions, the pattern was clear —
+         mechanical stability and contact quality determine everything downstream.</p>
+
+      <div class="callout">
+        <p><strong class="honest-strong">The honest version:</strong> this took
+           well over a dozen recording sessions. Most were noisy, drifted over
+           time, or failed outright. Diagnosing why — and learning to change one
+           variable at a time — was as much of the project as the signal
+           processing itself.</p>
+      </div>
+
+      <h3 class="step-h">4 · Results — promising and not</h3>
+      <p><span class="honest-good">What worked:</span> once the grommet cap was
+         dialed in, the device captured my own <strong>alpha rhythm</strong>
+         reliably and repeatably — the classic occipital signal that rises when
+         you close your eyes. Detecting a real brain signal on hardware I built
+         and debugged myself was the milestone the whole hardware effort was
+         chasing. (The full analysis lives on the
+         <a href="software.html" class="inline-link">software page</a>.)</p>
+      <p><span class="honest-bad">What didn't:</span> the ultimate goal — decoding
+         imagined left- vs. right-hand movement — did not classify above chance on
+         this setup. With only three motor-cortex channels, an unpracticed mental
+         task, and a still-imperfect noise floor, that outcome is consistent with
+         the literature: motor imagery is genuinely hard, and my own earlier study
+         found most people don't produce cleanly classifiable motor imagery even
+         on research-grade equipment. It's an honest result, and it points clearly
+         at what future work would need — more channels, lower noise, and practice.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    built with a raspberry pi, a lot of conductive gel, and honest results · ian beeck 2026
+  </div>
+</footer>
+
+</body>
+</html>

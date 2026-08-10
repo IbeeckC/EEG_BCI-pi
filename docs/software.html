@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Software — Ian Beeck's EEG BCI</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav">
+  <a class="nav__brand" href="index.html">◠ EEG_BCI <span>/ ian_beeck</span></a>
+  <div class="nav__links">
+    <a href="index.html">overview</a>
+    <a href="hardware.html">hardware</a>
+    <a href="software.html" class="active">software</a>
+    <a href="citations.html">citations</a>
+  </div>
+</nav>
+
+<!-- ===== Page hero ===== -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__eyebrow">Pillar 01 · Signal Processing &amp; ML</div>
+    <h1>The <span class="accent">software</span>.</h1>
+    <p class="hero__lead">
+      A full signal-processing and machine-learning pipeline — built and
+      validated on research-grade data before ever touching hardware.
+    </p>
+  </div>
+</header>
+
+<!-- ===== 1. Loading data ===== -->
+<section id="data">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">01 / loading data</span>
+      <h2>Two sources, one format</h2>
+    </div>
+    <div class="prose">
+      <p>The guiding principle of the whole project: <strong>develop and validate
+         the pipeline on trusted public data first, then feed my own hardware
+         recordings through the identical path.</strong> That way, when my own
+         data underperformed, I could trust the pipeline and look at the signal —
+         not the code.</p>
+
+      <div class="subgrid">
+        <div class="subcard">
+          <div class="subcard__tag">Source A · public</div>
+          <h3>PhysioNet via MNE</h3>
+          <p>The <span class="mono">MNE-Python</span> library loads the PhysioNet
+             EEG Motor Movement/Imagery dataset — 64-channel, 160&nbsp;Hz
+             recordings of imagined left/right-hand movement. Clean, research-grade
+             data used to build and prove every stage before hardware existed.</p>
+        </div>
+        <div class="subcard">
+          <div class="subcard__tag">Source B · my hardware</div>
+          <h3>PiEEG recordings</h3>
+          <p>The PiEEG board saves raw CSVs — 16 channels at ~250&nbsp;Hz. A custom
+             loader epochs these using the cue-log timestamps into the exact same
+             <span class="mono">(trials × channels × samples)</span> format the
+             pipeline already expected.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 2. Processing / pipeline ===== -->
+<section id="pipeline" style="background: var(--ink-2); border-top: 1px solid var(--ink-3); border-bottom: 1px solid var(--ink-3);">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">02 / processing</span>
+      <h2>The preprocessing &amp; pipeline</h2>
+    </div>
+    <div class="prose">
+      <p>Every recording runs through the same chain: a <strong>60&nbsp;Hz notch
+         filter</strong> to kill mains interference, a <strong>8–30&nbsp;Hz
+         bandpass</strong> to isolate the mu and beta rhythms that motor activity
+         modulates, then epoching into labeled trials around each cue. The whole
+         thing is packaged into clean, reusable <span class="mono">src/</span>
+         modules so the <em>identical</em> validated pipeline runs on both data
+         sources.</p>
+      <p>This is the full-circle moment of the project — my own hardware recording,
+         flowing through the very same <span class="mono">src/</span> pipeline that
+         was validated on PhysioNet:</p>
+
+      <div class="code">
+        <div class="code__head">
+          <span class="code__dots"><i></i><i></i><i></i></span>
+          <span class="code__file">run_my_recording.py</span>
+          <span class="code__lang">Python</span>
+        </div>
+        <pre><code><span class="tok-kw">import</span> <span class="tok-bi">sys</span>
+<span class="tok-kw">from</span> pathlib <span class="tok-kw">import</span> <span class="tok-bi">Path</span>
+<span class="tok-bi">sys</span>.path.append(str(<span class="tok-bi">Path</span>.home() / <span class="tok-str">&quot;projects&quot;</span> / <span class="tok-str">&quot;bci&quot;</span>))
+
+<span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> <span class="tok-bi">pd</span>, numpy <span class="tok-kw">as</span> <span class="tok-bi">np</span>
+<span class="tok-kw">from</span> scipy <span class="tok-kw">import</span> <span class="tok-bi">signal</span>
+<span class="tok-kw">from</span> src <span class="tok-kw">import</span> <span class="tok-bi">pipeline</span>   <span class="tok-com"># validated CSP+LDA + evaluate</span>
+
+<span class="tok-com"># --- Load the PiEEG recording ---</span>
+<span class="tok-bi">csv</span> = <span class="tok-bi">Path</span>.home()/<span class="tok-str">&quot;projects&quot;</span>/<span class="tok-str">&quot;bci&quot;</span>/<span class="tok-str">&quot;data&quot;</span>/<span class="tok-str">&quot;raw&quot;</span>/<span class="tok-str">&quot;pieeg_20260806_180425_annotated.csv&quot;</span>
+df = <span class="tok-bi">pd</span>.read_csv(<span class="tok-bi">csv</span>, low_memory=<span class="tok-kw">False</span>)
+fs = len(df) / (df[<span class="tok-str">&#x27;time_s&#x27;</span>].iloc[-<span class="tok-num">1</span>] - df[<span class="tok-str">&#x27;time_s&#x27;</span>].iloc[<span class="tok-num">0</span>])
+t  = df[<span class="tok-str">&#x27;time_s&#x27;</span>].values
+
+<span class="tok-com"># --- Filter motor channels (notch + 8-30 bandpass), same band as the pipeline ---</span>
+motor_ch = [<span class="tok-str">&#x27;ch6&#x27;</span>, <span class="tok-str">&#x27;ch7&#x27;</span>, <span class="tok-str">&#x27;ch8&#x27;</span>]
+<span class="tok-kw">def</span> prep(v):
+    v = v.astype(float); v -= v.mean()
+    bn, an = <span class="tok-bi">signal</span>.iirnotch(<span class="tok-num">60.0</span>, Q=<span class="tok-num">30</span>, fs=fs); v = <span class="tok-bi">signal</span>.filtfilt(bn, an, v)
+    sos = <span class="tok-bi">signal</span>.butter(<span class="tok-num">4</span>, [<span class="tok-num">8</span>, <span class="tok-num">30</span>], btype=<span class="tok-str">&#x27;bandpass&#x27;</span>, fs=fs, output=<span class="tok-str">&#x27;sos&#x27;</span>)
+    <span class="tok-kw">return</span> <span class="tok-bi">signal</span>.sosfiltfilt(sos, v)
+filtered = {c: prep(df[c].values) <span class="tok-kw">for</span> c <span class="tok-kw">in</span> motor_ch}
+
+<span class="tok-com"># --- Epoch 0.5-3.5s after each cue -&gt; X (trials, channels, samples), y (labels) ---</span>
+TMIN, TMAX = <span class="tok-num">0.5</span>, <span class="tok-num">3.5</span>
+X, y = [], []
+<span class="tok-kw">for</span> ct, lab <span class="tok-kw">in</span> cues:                       <span class="tok-com"># cues = (time, &quot;LEFT&quot;/&quot;RIGHT&quot;) log</span>
+    idx = <span class="tok-bi">np</span>.where((t &gt;= ct+TMIN) &amp; (t &lt; ct+TMAX))[<span class="tok-num">0</span>][:int((TMAX-TMIN)*fs)]
+    <span class="tok-kw">if</span> len(idx) &lt; int((TMAX-TMIN)*fs): <span class="tok-kw">continue</span>
+    X.append(<span class="tok-bi">np</span>.stack([filtered[c][idx] <span class="tok-kw">for</span> c <span class="tok-kw">in</span> motor_ch]))
+    y.append(<span class="tok-num">0</span> <span class="tok-kw">if</span> lab == <span class="tok-str">&#x27;LEFT&#x27;</span> <span class="tok-kw">else</span> <span class="tok-num">1</span>)
+X, y = <span class="tok-bi">np</span>.array(X), <span class="tok-bi">np</span>.array(y)
+
+<span class="tok-com"># --- Run the SAME validated pipeline (3 channels -&gt; 2 CSP components) ---</span>
+result = <span class="tok-bi">pipeline</span>.evaluate(X, y, n_components=<span class="tok-num">2</span>)
+print(f<span class="tok-str">&quot;CSP+LDA accuracy: {result[&#x27;mean&#x27;]:.3f} (±{result[&#x27;std&#x27;]:.3f})&quot;</span>)
+print(f<span class="tok-str">&quot;Chance level:     {result[&#x27;chance&#x27;]:.3f}&quot;</span>)</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 3. Classifying ===== -->
+<section id="classify">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">03 / classifying</span>
+      <h2>CSP + LDA — and beyond</h2>
+    </div>
+    <div class="prose">
+      <p>The core classifier is <strong>Common Spatial Patterns (CSP)</strong>
+         followed by <strong>Linear Discriminant Analysis (LDA)</strong>. CSP
+         learns spatial filters that maximize the variance difference between the
+         two classes; LDA then separates the resulting features. On PhysioNet
+         subject&nbsp;2, this pipeline reached <strong>86.7% cross-validated
+         accuracy</strong> (chance ≈ 51%), evaluated leak-free with CSP re-fit
+         inside every fold.<sup><a href="citations.html" class="inline-link">[refs]</a></sup></p>
+
+      <figure class="figure">
+        <img src="images/sw_csp.png" alt="CSP spatial pattern scalp maps CSP0 through CSP5" />
+        <figcaption>CSP spatial patterns. CSP3 shows a clean central (motor-area) focus — the filter picking up the discriminative signal.</figcaption>
+      </figure>
+
+      <h3 class="step-h">Trying to do better — an honest negative result</h3>
+      <p>I implemented <strong>Filter Bank CSP (FBCSP)</strong> — a more advanced
+         method that splits the signal into multiple frequency bands and runs CSP
+         on each. On this small-data regime, it <span class="honest">did not beat
+         the simpler CSP+LDA</span>, and often did worse. A decisive test — running
+         a single 8–30&nbsp;Hz band through the FBCSP machinery — exactly
+         reproduced the baseline, proving the code was correct and that multi-band
+         splitting genuinely hurts when there are few trials (noisy per-band
+         covariance estimates, higher-dimensional overfitting).</p>
+      <div class="callout">
+        <p><strong class="honest-strong">The lesson:</strong> method complexity
+           must be justified by data availability. FBCSP wins on datasets with
+           more trials than PhysioNet offers here — so the simpler, validated
+           CSP+LDA remained the right choice. Knowing when <em>not</em> to add
+           complexity is its own skill.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Results ===== -->
+<section id="results" style="background: var(--ink-2); border-top: 1px solid var(--ink-3); border-bottom: 1px solid var(--ink-3);">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">04 / results</span>
+      <h2>What the data actually showed</h2>
+    </div>
+    <div class="prose">
+
+      <h3 class="step-h"><span class="honest-good">Worked</span> · a real alpha rhythm on my own hardware</h3>
+      <p>The clearest success: my custom rig captured my own <strong>alpha
+         rhythm</strong> — the occipital 8–13&nbsp;Hz signal that rises when you
+         close your eyes — reliably and repeatably. Two channels (ch15, ch16)
+         showed the effect across three consecutive trials; ch14, shown honestly
+         alongside, never made good contact.</p>
+      <figure class="figure">
+        <img src="images/sw_alpha.png" alt="Alpha rhythm eyes-closed vs eyes-open spectra across three trials and three channels" />
+        <figcaption>Eyes-closed (green) vs eyes-open (red). The alpha band (shaded) rises sharply on eye closure for ch15/ch16 — proof of real brain signal. ch14 stayed flat: honest evidence of one bad contact.</figcaption>
+      </figure>
+
+      <h3 class="step-h">Individual variability — reproducing "BCI illiteracy"</h3>
+      <p>Running the same pipeline across many PhysioNet subjects surfaced a
+         well-known phenomenon: motor-imagery decoding works well for some people
+         and barely above chance for others. Only a minority cleared the ~70%
+         "usable BCI" threshold — a finding that reappeared, tellingly, in my own
+         hardware results.</p>
+      <figure class="figure">
+        <img src="images/sw_subjects.png" alt="Cross-subject CSP+LDA accuracy bar chart showing wide variability" />
+        <figcaption>Same pipeline, per-subject models. Subject 2 reaches 0.87; others hover near chance — illustrating real individual variability in motor imagery.</figcaption>
+      </figure>
+
+      <h3 class="step-h"><span class="honest-bad">Didn't work</span> · motor imagery on my hardware</h3>
+      <p>The ultimate goal — decoding imagined left vs. right hand from my own
+         recordings — <span class="honest">landed at chance.</span> Across sessions,
+         cross-validated accuracy sat around 0.5. With only three motor channels,
+         an unpracticed mental task, and a still-imperfect noise floor, this is
+         consistent with the variability above: motor imagery is genuinely hard,
+         and most first attempts don't classify — even on research-grade gear.
+         It's an honest ending that points clearly at future work: more channels,
+         lower noise, and practice.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5. Experimental cue setup ===== -->
+<section id="cues">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">05 / experiment</span>
+      <h2>The cue &amp; labeling system</h2>
+    </div>
+    <div class="prose">
+      <p>Good motor-imagery data needs many short, randomly-ordered, precisely-timed
+         trials — and reliable labels. I wrote a cue script that presents balanced,
+         randomized left/right cues on a fixed schedule and <strong>logs every cue
+         with a timestamp automatically</strong>, so the labels are machine-generated
+         and line up exactly with the EEG. That log becomes the label file the
+         epoching reads — no manual annotation, no bookkeeping errors.</p>
+
+      <div class="code">
+        <div class="code__head">
+          <span class="code__dots"><i></i><i></i><i></i></span>
+          <span class="code__file">cue_experiment.py</span>
+          <span class="code__lang">Python</span>
+        </div>
+        <pre><code><span class="tok-kw">import</span> <span class="tok-bi">time</span>, <span class="tok-bi">random</span>, <span class="tok-bi">csv</span>
+<span class="tok-kw">from</span> <span class="tok-bi">datetime</span> <span class="tok-kw">import</span> <span class="tok-bi">datetime</span>
+
+N_TRIALS, READY, IMAGERY, REST = <span class="tok-num">40</span>, <span class="tok-num">2.0</span>, <span class="tok-num">4.0</span>, <span class="tok-num">4.0</span>
+CLASSES = [<span class="tok-str">&#x27;LEFT&#x27;</span>, <span class="tok-str">&#x27;RIGHT&#x27;</span>]
+
+<span class="tok-com"># Balanced, shuffled sequence: equal L/R, randomized order</span>
+seq = CLASSES * (N_TRIALS // <span class="tok-num">2</span>)
+<span class="tok-bi">random</span>.shuffle(seq)
+
+logfile = f<span class="tok-str">&quot;cues_{datetime.now().strftime(&#x27;%Y%m%d_%H%M%S&#x27;)}.csv&quot;</span>
+start = <span class="tok-bi">time</span>.<span class="tok-bi">time</span>()
+<span class="tok-kw">with</span> open(logfile, <span class="tok-str">&#x27;w&#x27;</span>, newline=<span class="tok-str">&#x27;&#x27;</span>) <span class="tok-kw">as</span> f:
+    w = <span class="tok-bi">csv</span>.writer(f); w.writerow([<span class="tok-str">&#x27;trial&#x27;</span>, <span class="tok-str">&#x27;cue_time_s&#x27;</span>, <span class="tok-str">&#x27;label&#x27;</span>])
+    <span class="tok-kw">for</span> i, label <span class="tok-kw">in</span> enumerate(seq, <span class="tok-num">1</span>):
+        <span class="tok-bi">time</span>.sleep(READY)                       <span class="tok-com"># calm / fixation</span>
+        cue_time = <span class="tok-bi">time</span>.<span class="tok-bi">time</span>() - start
+        print(f<span class="tok-str">&quot;&gt;&gt;&gt; {label} &lt;&lt;&lt;&quot;</span>)               <span class="tok-com"># (or audio, to keep eyes closed)</span>
+        w.writerow([i, round(cue_time, <span class="tok-num">3</span>), label]); f.flush()
+        <span class="tok-bi">time</span>.sleep(IMAGERY)                      <span class="tok-com"># imagine the movement</span>
+        <span class="tok-bi">time</span>.sleep(REST)                         <span class="tok-com"># rest before next trial</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    built with a raspberry pi, a lot of conductive gel, and honest results · ian beeck 2026
+  </div>
+</footer>
+
+</body>
+</html>

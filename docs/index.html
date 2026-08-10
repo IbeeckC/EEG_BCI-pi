@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ian Beeck — Custom EEG Brain-Computer Interface</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav">
+  <a class="nav__brand" href="index.html">◠ EEG_BCI <span>/ ian_beeck</span></a>
+  <div class="nav__links">
+    <a href="index.html" class="active">overview</a>
+    <a href="hardware.html">hardware</a>
+    <a href="software.html">software</a>
+    <a href="citations.html">citations</a>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero__eyebrow">Brain–Computer Interface · Raspberry Pi · Signal Processing</div>
+    <h1>Reading the brain,<br /><span class="accent">one signal at a time.</span></h1>
+    <p class="hero__lead">
+      An end-to-end EEG brain–computer interface — a validated software pipeline
+      and a custom-built acquisition device — told as the complete, honest story.
+    </p>
+    <!-- EEG waveform motif: a hand-drawn "alpha rhythm" trace -->
+    <svg class="wave" viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,45 Q15,45 30,44 T60,46 Q75,20 90,45 T120,44
+               Q135,68 150,45 T180,46 Q195,22 210,45 T240,45
+               Q255,64 270,45 T300,44 Q315,25 330,45 T360,46
+               Q375,60 390,45 T420,45 Q440,10 460,45 Q480,80 500,45
+               T540,45 Q555,30 570,45 T600,46 Q615,62 630,45 T660,44
+               Q675,28 690,45 T720,46 Q735,60 750,45 T780,45
+               Q800,15 820,45 Q840,75 860,45 T900,45 Q915,32 930,45
+               T960,46 Q975,58 990,45 T1020,44 Q1035,30 1050,45
+               T1080,46 Q1095,55 1110,45 T1140,45 Q1155,40 1170,45 T1200,45" />
+    </svg>
+  </div>
+</header>
+
+<!-- ===== Project Summary ===== -->
+<section id="summary">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">00 / summary</span>
+      <h2>What this project is</h2>
+    </div>
+    <div class="prose">
+      <p class="lead">
+        This project is an end-to-end brain–computer interface (BCI): a system
+        that reads the brain's electrical activity and attempts to translate a
+        mental command — imagining left-hand versus right-hand movement — into a
+        signal a computer can act on.
+      </p>
+      <p>
+        The long-term vision is thought-based control of a robotic arm. The
+        realistic first step is a binary output — like turning a light on or off
+        — driven by two distinguishable mental states.
+      </p>
+      <p>
+        The project rests on two pillars. The <strong>software</strong> pillar is
+        a full signal-processing and machine-learning pipeline, developed and
+        validated on public research-grade EEG data before ever touching
+        hardware. The <strong>hardware</strong> pillar is a custom-built EEG
+        around a Raspberry Pi — an established microcomputer — turning an
+        affordable, accessible platform into a working brain-signal acquisition
+        device. Bringing the two together is where the real challenge lived.
+      </p>
+
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar__label">Pillar 01</div>
+          <h3>Software</h3>
+          <p>A signal-processing and ML pipeline built and validated on
+             research-grade EEG data — before any hardware was involved.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar__label">Pillar 02</div>
+          <h3>Hardware</h3>
+          <p>A custom EEG acquisition device built around a Raspberry Pi,
+             from board bring-up to a hand-built electrode cap.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p>What follows is the complete, honest account of that process — the
+           methods, the results, and just as importantly, what didn't work and
+           what I learned from it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== About / Why ===== -->
+<section id="about" style="background: var(--ink-2); border-top: 1px solid var(--ink-3); border-bottom: 1px solid var(--ink-3);">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">01 / about</span>
+      <h2>Who built this &amp; why</h2>
+    </div>
+
+    <div class="profile">
+      <div>
+        <img class="profile__photo" src="images/ian.jpg" alt="Ian Beeck" />
+        <div class="contact">
+          <a href="mailto:beecki303@gmail.com">beecki303@gmail.com</a>
+          <a href="https://www.linkedin.com/in/ian-beeck/" target="_blank" rel="noopener">linkedin.com/in/ian-beeck</a>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p class="profile__name">Ian Beeck</p>
+        <p class="profile__role">Electrical Engineering · University of Michigan</p>
+
+        <p>
+          I'm a sophomore studying Electrical Engineering at the University of
+          Michigan. Originally from Mexico and having lived all over, I've long
+          been drawn to medicine — and specifically to biomedical devices. That
+          interest led me to the Saab Lab, an electrophysiology lab studying
+          nociception, where I first encountered the EEG. Something about
+          measuring the brain's electrical activity fascinated me, and looking
+          back, that early intrigue with electrophysiological signals is what set
+          me on the path I'm on now: a genuine enthusiasm for signal processing
+          and a desire to understand signals at a deeper level — whether that's
+          neural activity, wireless networks, or anything in between.
+        </p>
+        <p>
+          This project came out of the inner engineer in me that wanted to build
+          something real with a Raspberry Pi. Brainstorming what that "something"
+          could be, I landed on an idea that felt like a full-circle moment: use
+          this established little computer to build an EEG — bringing together the
+          electrophysiology that first drew me in and the signal processing I'd
+          come to love.
+        </p>
+        <p>
+          Once I started researching and realized it was actually feasible, I set
+          concrete goals. First, I wanted to learn to <strong>integrate software
+          and hardware</strong> — a skill I'd started developing in a robotics
+          course this past semester and wanted to push further. Second, I wanted
+          to go deeper into <strong>signal processing techniques and the
+          mathematics</strong> behind experimentally working with EEG. Those
+          goals shaped the target: build an EEG-based system that could
+          distinguish imagined right-hand from left-hand movement — a two-class
+          brain–computer interface, with a possible future application in
+          controlling a device through thought alone.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Comments ===== -->
+<section id="discuss">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-head__tag">02 / discuss</span>
+      <h2>Ideas &amp; future work</h2>
+    </div>
+    <div class="prose comments-intro">
+      <p>This project has a long list of next steps — more electrodes, an
+         eyes-open/closed binary switch, real-movement trials. If you have
+         thoughts, critiques, or ideas for where it could go, leave them below.</p>
+    </div>
+    <!-- Giscus comment widget mounts here (configured once Discussions is enabled) -->
+    <div id="giscus-comments">
+      <p style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted);">
+        [ comment thread will mount here — Giscus, backed by GitHub Discussions ]
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    built with a raspberry pi, a lot of conductive gel, and honest results · ian beeck 2026
+  </div>
+</footer>
+
+</body>
+</html>
